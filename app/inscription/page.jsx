@@ -3,421 +3,290 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Eye, EyeOff, User, Mail, Phone, Lock, Building2, MapPin, Hash } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, RefreshCw, Shield } from "lucide-react";
+
+function PasswordField({ label, icon: Icon }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-1.5">
+        {label}<span className="text-red-400">*</span>
+      </label>
+      <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-3.5">
+        <Icon size={16} className="text-gray-400 flex-shrink-0" />
+        <input
+          type={show ? "text" : "password"}
+          placeholder="••••••••"
+          className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
+        />
+        <button
+          type="button"
+          onClick={() => setShow((s) => !s)}
+          className="text-gray-400 hover:text-gray-600 flex-shrink-0"
+        >
+          {show ? <EyeOff size={16} /> : <Eye size={16} />}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const LegalBox = () => (
+  <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+    <p className="text-xs text-gray-400 italic leading-relaxed">
+      Conformément à la loi de 09-08, vous disposez d&apos;un droit d&apos;accès, de rectification
+      et d&apos;opposition au traitement de vos données personnelles. Ce traitement a été
+      autorisé par la CNDP sous le numéro D-765/2024.
+    </p>
+  </div>
+);
+
+const OuDivider = () => (
+  <div className="flex items-center gap-3 my-4">
+    <div className="flex-1 h-px bg-gray-200" />
+    <span className="text-gray-400 text-xs font-medium">ou</span>
+    <div className="flex-1 h-px bg-gray-200" />
+  </div>
+);
+
+const GoogleButton = () => (
+  <button
+    type="button"
+    className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-xl px-6 py-3.5 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+  >
+    <svg width="18" height="18" viewBox="0 0 18 18">
+      <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" />
+      <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" />
+      <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" />
+      <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" />
+    </svg>
+    Continuer avec Google
+  </button>
+);
 
 export default function InscriptionPage() {
   const [onglet, setOnglet] = useState("utilisateur");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [acceptedPharmacie, setAcceptedPharmacie] = useState(false);
   const router = useRouter();
 
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Onglets en haut */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 flex gap-1 py-3">
-          <button
-            onClick={() => setOnglet("utilisateur")}
-            className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
-              onglet === "utilisateur"
-                ? "bg-primary text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            Inscription Utilisateur
-          </button>
-          <button
-            onClick={() => setOnglet("pharmacie")}
-            className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
-              onglet === "pharmacie"
-                ? "bg-primary text-white"
-                : "text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            Inscription Pharmacie
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-100 flex items-start justify-center py-8 px-4">
+      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-xl overflow-hidden flex">
 
-      {/* FORMULAIRE UTILISATEUR */}
-      {onglet === "utilisateur" && (
-        <div className="grid md:grid-cols-2 min-h-[calc(100vh-57px)]">
-          {/* Colonne gauche — image */}
-          <div className="relative hidden md:block">
-            <div className="absolute inset-0 bg-primary/90 z-10 flex flex-col items-center justify-center px-10 text-white">
-            <Image
-              src="/logo.jpeg"
-              alt="MedisPo"
-              width={140}
-              height={40}
-              className="object-contain"
-            />
-              <h2 className="font-title text-3xl font-extrabold text-center mb-4">
-                La technologie au service de la santé.
-              </h2>
-              <p className="text-white/80 text-sm text-center leading-relaxed">
-                Accédez à l'intégralité des médicaments et diagnostiquiez
-                votre état de santé en toute sécurité avec nos outils
-                médicaux.
-              </p>
+        <div className="hidden md:block w-[42%] flex-shrink-0 relative min-h-[760px]">
+          <Image
+            src="/image.png"
+            alt="Intérieur pharmacie"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#162d4a]/95 via-[#162d4a]/35 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+            <div className="flex items-center gap-2 mb-5">
+              <Shield size={17} className="text-white/80" />
+              <span className="font-semibold text-sm tracking-wide">MedisPo</span>
             </div>
-            <div className="absolute inset-0 bg-gray-300" />
+            <h2 className="font-title text-3xl font-extrabold mb-3 leading-snug">
+              La technologie au<br />service de la santé.
+            </h2>
+            <p className="text-white/70 text-sm leading-relaxed">
+              {onglet === "utilisateur"
+                ? "Accédez à l'intégralité des médicaments et diagnostiquez votre état de santé en toute sécurité avec nos outils médicaux."
+                : "Développez votre pharmacie et attirez plus de clients en rejoignant notre plateforme."}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col overflow-y-auto">
+          <div className="px-8 pt-8">
+            <div className="flex bg-gray-100 rounded-xl p-1">
+              <button
+                onClick={() => setOnglet("pharmacie")}
+                className={`flex-1 py-3 rounded-lg text-sm font-semibold transition-all ${
+                  onglet === "pharmacie"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Inscription Pharmacie
+              </button>
+              <button
+                onClick={() => setOnglet("utilisateur")}
+                className={`flex-1 py-3 rounded-lg text-sm font-semibold transition-all ${
+                  onglet === "utilisateur"
+                    ? "bg-primary text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Inscription Utilisateur
+              </button>
+            </div>
           </div>
 
-          {/* Colonne droite — formulaire */}
-          <div className="flex items-center justify-center px-6 py-10">
-            <div className="w-full max-w-md">
-              <h1 className="font-title text-2xl font-extrabold text-primary mb-1">
-                Inscription
-              </h1>
-              <p className="text-textgray text-sm mb-6">
-                Créez votre compte personnel
-              </p>
+          {onglet === "utilisateur" && (
+            <div className="px-8 py-6">
+              <h1 className="font-title text-3xl font-extrabold text-primary mb-1">Inscription</h1>
+              <p className="text-gray-500 text-sm mb-6">Créez votre compte personnel</p>
 
               <form className="flex flex-col gap-4">
-                {/* Prénom / Nom */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-medium text-gray-700 mb-1 block">
-                      Prénom
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-1.5">
+                      Nom<span className="text-red-400">*</span>
                     </label>
-                    <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                      <User size={15} className="text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Ahmed"
-                        className="flex-1 outline-none text-sm text-gray-700"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      placeholder="Doe"
+                      className="w-full bg-gray-100 rounded-xl px-4 py-3.5 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20"
+                    />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-700 mb-1 block">
-                      Nom
+                    <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-1.5">
+                      Prénom<span className="text-red-400">*</span>
                     </label>
-                    <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                      <User size={15} className="text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Bennani"
-                        className="flex-1 outline-none text-sm text-gray-700"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Adresse email
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Mail size={15} className="text-gray-400" />
                     <input
-                      type="email"
-                      placeholder="ahmed@email.com"
-                      className="flex-1 outline-none text-sm text-gray-700"
+                      type="text"
+                      placeholder="John"
+                      className="w-full bg-gray-100 rounded-xl px-4 py-3.5 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-primary/20"
                     />
                   </div>
                 </div>
 
-                {/* Téléphone */}
                 <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-1.5">
                     Numéro de téléphone
                   </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <span className="text-xs text-gray-500 font-medium border-r border-gray-200 pr-2">
-                      +212
-                    </span>
-                    <Phone size={15} className="text-gray-400" />
+                  <div className="flex items-center bg-gray-100 rounded-xl overflow-hidden">
+                    <div className="flex items-center gap-2 px-3 py-3.5 border-r border-gray-200 flex-shrink-0">
+                      <span className="text-base leading-none">🇲🇦</span>
+                      <span className="text-sm font-semibold text-gray-700">+212</span>
+                    </div>
                     <input
                       type="tel"
-                      placeholder="06 00 00 00 00"
-                      className="flex-1 outline-none text-sm text-gray-700"
+                      placeholder="6 00 00 00 00"
+                      className="flex-1 bg-transparent px-3 py-3.5 text-sm text-gray-700 outline-none placeholder:text-gray-400"
                     />
                   </div>
                 </div>
 
-                {/* Mot de passe */}
                 <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Mot de passe
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-1.5">
+                    Email<span className="text-red-400">*</span>
                   </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Lock size={15} className="text-gray-400" />
+                  <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-3.5">
+                    <Mail size={16} className="text-gray-400 flex-shrink-0" />
                     <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="flex-1 outline-none text-sm text-gray-700"
+                      type="email"
+                      placeholder="votre@email.com"
+                      className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
                   </div>
                 </div>
 
-                {/* Confirmer mot de passe */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Confirmer le mot de passe
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Lock size={15} className="text-gray-400" />
-                    <input
-                      type={showConfirm ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="flex-1 outline-none text-sm text-gray-700"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirm(!showConfirm)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-                </div>
+                <PasswordField label="Mot de passe" icon={Lock} />
+                <PasswordField label="Confirmer votre mot de passe" icon={RefreshCw} />
 
-                {/* Checkbox CGU */}
-                <label className="flex items-start gap-2 cursor-pointer">
+                <label className="flex items-start gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={accepted}
                     onChange={(e) => setAccepted(e.target.checked)}
-                    className="mt-0.5 accent-primary"
+                    className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-primary flex-shrink-0"
                   />
-                  <span className="text-xs text-textgray leading-relaxed">
-                    J'accepte les{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      conditions générales d'utilisation
-                    </Link>{" "}
-                    et la{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      politique de confidentialité
+                  <span className="text-xs text-gray-600 leading-relaxed">
+                    J&apos;ai lu et j&apos;accepte les{" "}
+                    <Link href="#" className="text-primary hover:underline font-medium">
+                      conditions générales d&apos;utilisation
                     </Link>
+                    , notamment la mention relative à la protection des données personnelles.
                   </span>
                 </label>
 
-                {/* Bouton inscription */}
+                <LegalBox />
+
                 <button
-                type="button"
-                onClick={() => router.push("/dashboard")}
-                className="bg-primary text-white rounded-lg px-6 py-3 font-medium text-sm hover:bg-secondary transition-colors"
+                  type="button"
+                  onClick={() => router.push("/dashboard")}
+                  className="w-full bg-primary text-white rounded-xl py-4 text-base font-semibold hover:bg-secondary transition-colors"
                 >
-                S'inscrire
+                  S&apos;inscrire
                 </button>
               </form>
 
-              {/* Séparateur */}
-              <div className="flex items-center gap-3 my-4">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-textgray text-xs">ou</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
-
-              {/* Google */}
-              <button className="w-full flex items-center justify-center gap-3 border border-gray-200 rounded-lg px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                <svg width="18" height="18" viewBox="0 0 18 18">
-                  <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" />
-                  <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" />
-                  <path fill="#FBBC05" d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" />
-                  <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" />
-                </svg>
-                Continuer avec Google
-              </button>
-
-              {/* Lien connexion */}
-              <p className="text-center text-sm text-textgray mt-4">
+              <OuDivider />
+              <GoogleButton />
+              <p className="text-center text-sm text-gray-500 mt-4">
                 Déjà un compte ?{" "}
-                <Link href="/connexion" className="text-primary font-medium hover:underline">
+                <Link href="/connexion" className="text-primary font-semibold hover:underline">
                   Se connecter
                 </Link>
               </p>
             </div>
-          </div>
-        </div>
-      )}
+          )}
 
-      {/* FORMULAIRE PHARMACIE */}
-      {onglet === "pharmacie" && (
-        <div className="grid md:grid-cols-2 min-h-[calc(100vh-57px)]">
-          {/* Colonne gauche — image */}
-          <div className="relative hidden md:block">
-            <div className="absolute inset-0 bg-primary/90 z-10 flex flex-col items-center justify-center px-10 text-white">
-            <Image
-              src="/logo.jpeg"
-              alt="MedisPo"
-              width={140}
-              height={40}
-              className="object-contain"
-            />
-              <h2 className="font-title text-3xl font-extrabold text-center mb-4">
-                Rejoignez notre réseau de pharmacies partenaires.
-              </h2>
-              <p className="text-white/80 text-sm text-center leading-relaxed">
-                Augmentez votre visibilité et gérez vos stocks de médicaments
-                efficacement grâce à notre plateforme dédiée aux professionnels.
-              </p>
-            </div>
-            <div className="absolute inset-0 bg-gray-300" />
-          </div>
-
-          {/* Colonne droite — formulaire pharmacie */}
-          <div className="flex items-center justify-center px-6 py-10">
-            <div className="w-full max-w-md">
-              <h1 className="font-title text-2xl font-extrabold text-primary mb-1">
-                Inscription Pharmacie
-              </h1>
-              <p className="text-textgray text-sm mb-6">
-                Créez votre profil professionnel
-              </p>
+          {onglet === "pharmacie" && (
+            <div className="px-8 py-6">
+              <h1 className="font-title text-3xl font-extrabold text-primary mb-1">Inscription</h1>
+              <p className="text-gray-500 text-sm mb-6">Créez votre compte professionnel</p>
 
               <form className="flex flex-col gap-4">
-                {/* Nom pharmacie */}
                 <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Nom de la pharmacie
+                  <label className="block text-xs font-bold uppercase tracking-widest text-gray-600 mb-1.5">
+                    Email <span className="text-red-400">*</span>
                   </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Building2 size={15} className="text-gray-400" />
+                  <div className="flex items-center gap-3 bg-gray-100 rounded-xl px-4 py-3.5">
+                    <Mail size={16} className="text-gray-400 flex-shrink-0" />
                     <input
-                      type="text"
-                      placeholder="Pharmacie Atlas"
-                      className="flex-1 outline-none text-sm text-gray-700"
+                      type="email"
+                      placeholder="contact@pharmacie.fr"
+                      className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
                     />
                   </div>
                 </div>
 
-                {/* CIF */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Numéro CIF
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Hash size={15} className="text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="12345678"
-                      className="flex-1 outline-none text-sm text-gray-700"
-                    />
-                  </div>
-                </div>
+                <PasswordField label="Mot de passe" icon={Lock} />
+                <PasswordField label="Confirmer le mot de passe" icon={RefreshCw} />
 
-                {/* Secteur */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Secteur d'activité
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Hash size={15} className="text-gray-400" />
-                    <select className="flex-1 outline-none text-sm text-gray-700 bg-transparent">
-                      <option value="">Sélectionner un secteur</option>
-                      <option value="urbain">Urbain</option>
-                      <option value="rural">Rural</option>
-                      <option value="periurbain">Péri-urbain</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Ville */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Ville
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <MapPin size={15} className="text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Casablanca"
-                      className="flex-1 outline-none text-sm text-gray-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Téléphone */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Numéro de téléphone
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <span className="text-xs text-gray-500 font-medium border-r border-gray-200 pr-2">
-                      +212
-                    </span>
-                    <Phone size={15} className="text-gray-400" />
-                    <input
-                      type="tel"
-                      placeholder="05 22 00 00 00"
-                      className="flex-1 outline-none text-sm text-gray-700"
-                    />
-                  </div>
-                </div>
-
-                {/* Mot de passe */}
-                <div>
-                  <label className="text-xs font-medium text-gray-700 mb-1 block">
-                    Mot de passe
-                  </label>
-                  <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2.5 focus-within:border-primary">
-                    <Lock size={15} className="text-gray-400" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      className="flex-1 outline-none text-sm text-gray-700"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Checkbox CGU */}
-                <label className="flex items-start gap-2 cursor-pointer">
+                <label className="flex items-start gap-2.5 cursor-pointer">
                   <input
                     type="checkbox"
-                    className="mt-0.5 accent-primary"
+                    checked={acceptedPharmacie}
+                    onChange={(e) => setAcceptedPharmacie(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-primary flex-shrink-0"
                   />
-                  <span className="text-xs text-textgray leading-relaxed">
-                    J'accepte les{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      conditions générales
-                    </Link>{" "}
-                    et la{" "}
-                    <Link href="#" className="text-primary hover:underline">
-                      politique de confidentialité
+                  <span className="text-xs text-gray-600 leading-relaxed">
+                    J&apos;ai lu et j&apos;accepte les{" "}
+                    <Link href="#" className="text-primary hover:underline font-medium">
+                      conditions générales d&apos;utilisation
                     </Link>
+                    , notamment la mention relative à la protection des données personnelles.
                   </span>
                 </label>
 
-                {/* Bouton */}
-                <Link
-                  href="/inscription/finalisation"
-                  className="bg-primary text-white rounded-lg px-6 py-3 font-medium text-sm hover:bg-secondary transition-colors text-center"
+                <LegalBox />
+
+                <button
+                  type="button"
+                  onClick={() => router.push("/inscription/finalisation")}
+                  className="w-full bg-primary text-white rounded-xl py-4 text-base font-semibold hover:bg-secondary transition-colors"
                 >
-                  Créer mon compte →
-                </Link>
+                  Créer mon compte
+                </button>
               </form>
 
-              {/* Lien connexion */}
-              <p className="text-center text-sm text-textgray mt-4">
-                Déjà un compte ?{" "}
-                <Link href="/connexion" className="text-primary font-medium hover:underline">
+              <OuDivider />
+              <GoogleButton />
+              <p className="text-center text-sm text-gray-500 mt-4">
+                Déjà un compte professionnel ?{" "}
+                <Link href="/connexion" className="text-primary font-semibold hover:underline">
                   Se connecter
                 </Link>
               </p>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -39,10 +39,10 @@ export default function Navbar() {
               Comment ça marche
             </Link>
             <Link
-              href="#faq"
+              href="#"
               className="text-gray-600 hover:text-primary transition-colors text-sm font-medium"
             >
-              FAQ
+              À propos
             </Link>
           </div>
 
@@ -90,11 +90,11 @@ export default function Navbar() {
             Comment ça marche
           </Link>
           <Link
-            href="#faq"
+            href="#"
             className="text-gray-600 text-sm font-medium"
             onClick={() => setMenuOpen(false)}
           >
-            FAQ
+            À propos
           </Link>
           <hr />
           <Link
